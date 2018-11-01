@@ -21,34 +21,37 @@ begin
 
     result = Dict()
     let SVertice, BVertice
-        SVertice = 0
-        BVertice = 0
-        nrows, ncols = size(communities)
-        for row in 1:nrows
-            for col in 1:ncols
-                if(!ismissing(communities[row,col]) && haskey(vertices_type,string(communities[row,col])) )
-                    print(vertices_type[string(communities[row,col])], ", ")
-                    if (vertices_type[string(communities[row,col])] == "S")
-                        SVertice = SVertice + 1
-                    else
-                        BVertice = BVertice + 1
-                    end
+    SVertice = 0
+    BVertice = 0
+    nrows, ncols = size(communities)
+    for row in 1:nrows
+        for col in 2:ncols
+            if(!ismissing(communities[row,col]) && haskey(vertices_type,string(communities[row,col])) )
+                print(vertices_type[string(communities[row,col])], ", ")
+                if (vertices_type[string(communities[row,col])] == "S")
+                    SVertice = SVertice + 1
+                else
+                    BVertice = BVertice + 1
                 end
             end
-            if(SVertice > BVertice)
-                result[row] = [SVertice ,BVertice , SVertice / (SVertice + BVertice)]
-            else
-                result[row] = [BVertice ,SVertice ,BVertice / (SVertice + BVertice)]
-            end
-            SVertice = 0
-            BVertice = 0
         end
+        if(SVertice > BVertice)
+            result[row] = [SVertice ,BVertice , SVertice / (SVertice + BVertice)]
+        else
+            result[row] = [BVertice ,SVertice ,BVertice / (SVertice + BVertice)]
+        end
+        SVertice = 0
+        BVertice = 0
+    end
     end
 
     open("communities_purity.csv", "w") do file
         write(file,"ID,STANFORD,BERKELEY,PURITY,\n")
         for k in keys(result)
-            write(file,,string(k)*","*string(Int32(result[k][1]))*","*string(Int32(result[k][2]))*","*string(result[k][3])*","*"\n")
+            write(file,string(k))
+            write(file,",")
+            write(file,string(Int32(result[k][1]))*","*string(Int32(result[k][2]))*","*string(result[k][3])*",")
+            write(file,"\n")
         end
     end
 end
